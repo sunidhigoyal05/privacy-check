@@ -2,21 +2,11 @@ import axios from 'axios';
 import type {
   Assessment, AssessmentCreate, PrivacyAnalysis, PETRecommendations,
   BiasAnalysis, PreMortemAnalysis, GovernanceMap, DashboardData, FullReport,
-  UserCreate, UserResponse, AuthToken,
 } from '../types';
 
 const api = axios.create({
   baseURL: '/api',
   headers: { 'Content-Type': 'application/json' },
-});
-
-// — Auth interceptor: attach token to every request —
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('privacycheck-token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
 });
 
 // — Response interceptor: global error handling —
@@ -32,22 +22,9 @@ api.interceptors.response.use(
     // Dispatch a custom event that the toast system listens to
     window.dispatchEvent(new CustomEvent('api-error', { detail: message }));
 
-    // If 401, clear stored auth
-    if (error.response?.status === 401) {
-      localStorage.removeItem('privacycheck-token');
-      window.dispatchEvent(new CustomEvent('auth-expired'));
-    }
-
     return Promise.reject(error);
   }
 );
-
-// Auth
-export const registerUser = (data: UserCreate) =>
-  api.post<UserResponse>('/auth/register', data).then(r => r.data);
-
-export const loginUser = (data: UserCreate) =>
-  api.post<AuthToken>('/auth/login', data).then(r => r.data);
 
 // Assessment CRUD
 export const createAssessment = (data: AssessmentCreate) =>

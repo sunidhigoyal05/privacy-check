@@ -8,7 +8,11 @@ class Base(DeclarativeBase):
     pass
 
 
-if settings.database_url.startswith("sqlite"):
+# Handle database URL for async drivers
+if "aiosqlite" in settings.database_url or "asyncpg" in settings.database_url:
+    # URL already has async driver
+    async_url = settings.database_url
+elif settings.database_url.startswith("sqlite"):
     async_url = settings.database_url.replace("sqlite://", "sqlite+aiosqlite://", 1)
 else:
     async_url = settings.database_url.replace("postgresql://", "postgresql+asyncpg://", 1)

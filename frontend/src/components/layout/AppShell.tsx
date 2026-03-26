@@ -1,16 +1,13 @@
-import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Sidebar from './Sidebar';
 import ToastContainer from './ToastContainer';
 import { useAssessmentStore } from '../../store/assessmentStore';
-import { useAuthStore } from '../../store/authStore';
 import IntakeWizard from '../../pages/IntakeWizard/IntakeWizard';
 import PrivacyLab from '../../pages/PrivacyLab/PrivacyLab';
 import BiasLab from '../../pages/BiasLab/BiasLab';
 import GovernanceMap from '../../pages/GovernanceMap/GovernanceMap';
 import JointDashboard from '../../pages/JointDashboard/JointDashboard';
 import Report from '../../pages/Report/Report';
-import AuthPage from '../../pages/Auth/AuthPage';
 
 const pageVariants = {
   initial: { opacity: 0, y: 12 },
@@ -20,23 +17,6 @@ const pageVariants = {
 
 export default function AppShell() {
   const { activeSection } = useAssessmentStore();
-  const { isAuthenticated, logout } = useAuthStore();
-
-  // Listen for auth-expired events from the axios interceptor
-  useEffect(() => {
-    const handler = () => logout();
-    window.addEventListener('auth-expired', handler);
-    return () => window.removeEventListener('auth-expired', handler);
-  }, [logout]);
-
-  if (!isAuthenticated) {
-    return (
-      <>
-        <AuthPage />
-        <ToastContainer />
-      </>
-    );
-  }
 
   const renderPage = () => {
     switch (activeSection) {
@@ -51,7 +31,7 @@ export default function AppShell() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#FAFAFA]">
+    <div className="flex min-h-screen bg-[#08080E]">
       <Sidebar />
       <main className="flex-1 overflow-auto">
         <AnimatePresence mode="wait">

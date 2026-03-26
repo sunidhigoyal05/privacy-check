@@ -6,10 +6,10 @@ import { generateGovernance } from '../../services/api';
 import { HiOutlineScale, HiOutlinePlus, HiOutlineArrowPath } from 'react-icons/hi2';
 
 const RACI_COLORS: Record<string, string> = {
-  R: 'bg-primary-100 text-primary-700',
-  A: 'bg-danger-100 text-danger-700',
-  C: 'bg-warning-100 text-warning-700',
-  I: 'bg-gray-100 text-gray-600',
+  R: 'bg-primary-100/20 text-primary-400',
+  A: 'bg-danger-100/20 text-danger-400',
+  C: 'bg-warning-100/20 text-warning-400',
+  I: 'bg-default-200/30 text-default-500',
 };
 
 const RACI_LABELS: Record<string, string> = {

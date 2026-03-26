@@ -27,6 +27,9 @@ interface AssessmentStore {
   // Saved assessments list
   savedAssessments: Assessment[];
   setSavedAssessments: (assessments: Assessment[]) => void;
+
+  // Start a fresh assessment
+  newAssessment: () => void;
 }
 
 const initialDraft: Partial<AssessmentCreate> = {
@@ -66,6 +69,14 @@ export const useAssessmentStore = create<AssessmentStore>()(
 
       savedAssessments: [],
       setSavedAssessments: (assessments) => set({ savedAssessments: assessments }),
+
+      newAssessment: () => set({
+        currentAssessment: null,
+        draft: { ...initialDraft },
+        wizardStep: 'project-details',
+        activeSection: 'intake',
+        loading: {},
+      }),
     }),
     {
       name: 'privacycheck-storage',

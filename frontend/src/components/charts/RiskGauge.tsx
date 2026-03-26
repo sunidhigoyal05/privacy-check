@@ -24,7 +24,7 @@ export default function RiskGauge({ value, size = 80 }: RiskGaugeProps) {
         {/* Background circle */}
         <circle
           cx={size / 2} cy={size / 2} r={radius}
-          fill="none" stroke="#F1F5F9" strokeWidth="6"
+          fill="none" stroke="#1E1E2E" strokeWidth="6"
         />
         {/* Progress circle */}
         <circle

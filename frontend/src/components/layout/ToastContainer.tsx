@@ -45,7 +45,7 @@ export default function ToastContainer() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="bg-danger-50 border border-danger-200 text-danger-700 px-4 py-3 rounded-xl shadow-lg flex items-start gap-3"
+            className="bg-[#1A0814] border border-danger-900/50 text-danger-400 px-4 py-3 rounded-xl shadow-2xl shadow-black/40 flex items-start gap-3"
           >
             <HiOutlineExclamationCircle className="shrink-0 mt-0.5" size={18} />
             <p className="text-sm flex-1">{toast.message}</p>

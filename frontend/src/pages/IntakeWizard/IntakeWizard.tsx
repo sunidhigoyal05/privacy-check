@@ -112,7 +112,7 @@ export default function IntakeWizard() {
       </div>
 
       {/* Step Content */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 min-h-[400px]">
+      <div className="bg-[#0E0E1A] rounded-2xl border border-[#1E1E2E] p-8 min-h-[400px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={wizardStep}

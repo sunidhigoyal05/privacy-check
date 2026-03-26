@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { NavSection } from '../../types';
 import { useAssessmentStore } from '../../store/assessmentStore';
-import { useAuthStore } from '../../store/authStore';
 import { listAssessments } from '../../services/api';
 import { motion } from 'framer-motion';
 import {
@@ -11,8 +10,8 @@ import {
   HiOutlineScale,
   HiOutlineChartBarSquare,
   HiOutlineDocumentArrowDown,
-  HiOutlineArrowRightOnRectangle,
   HiOutlineFolderOpen,
+  HiOutlinePlusCircle,
 } from 'react-icons/hi2';
 
 interface NavItem {
@@ -31,8 +30,7 @@ const navItems: NavItem[] = [
 ];
 
 export default function Sidebar() {
-  const { activeSection, setActiveSection, currentAssessment, savedAssessments, setSavedAssessments, setCurrentAssessment } = useAssessmentStore();
-  const { logout, user } = useAuthStore();
+  const { activeSection, setActiveSection, currentAssessment, savedAssessments, setSavedAssessments, setCurrentAssessment, newAssessment } = useAssessmentStore();
 
   // Load saved assessments on mount
   useEffect(() => {
@@ -66,21 +64,32 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-72 bg-white border-r border-gray-100 min-h-screen flex flex-col shadow-sm">
+    <aside className="w-72 bg-[#0A0A14] border-r border-[#1C1C2C] min-h-screen flex flex-col">
       {/* Logo / Title */}
-      <div className="px-6 py-6 border-b border-gray-50">
+      <div className="px-6 py-6 border-b border-[#1C1C2C]">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-wb-sky to-wb-teal flex items-center justify-center">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#5AA8E8] to-[#2DD4BF] flex items-center justify-center shadow-lg shadow-[#5AA8E8]/20">
             <HiOutlineShieldCheck className="text-white" size={20} />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-wb-blue">PrivacyCheck</h1>
-            <p className="text-[10px] text-gray-400 tracking-wide uppercase">World Bank</p>
+            <h1 className="text-lg font-semibold text-[#E8E8FA]">PrivacyCheck</h1>
+            <p className="text-[10px] text-[#4F4F80] tracking-wide uppercase">World Bank</p>
           </div>
         </div>
       </div>
 
-      {/* Navigation */}
+      {/* New Assessment Button */}
+      <div className="px-3 py-3 border-b border-[#1C1C2C]">
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={newAssessment}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#5AA8E8]/20 to-[#2DD4BF]/20 border border-[#5AA8E8]/30 text-[#5AA8E8] text-sm font-medium hover:from-[#5AA8E8]/30 hover:to-[#2DD4BF]/30 transition-all duration-200"
+        >
+          <HiOutlinePlusCircle size={17} />
+          New Assessment
+        </motion.button>
+      </div>
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const status = getCompletionStatus(item.id);
@@ -96,10 +105,10 @@ export default function Sidebar() {
               disabled={isLocked}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
                 ${isActive
-                  ? 'bg-primary-50 text-primary-600 shadow-sm'
+                  ? 'bg-[#5AA8E8]/10 text-[#5AA8E8] shadow-none'
                   : isLocked
-                    ? 'text-gray-300 cursor-not-allowed'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'text-[#2C2C44] cursor-not-allowed'
+                    : 'text-[#8888B4] hover:bg-[#141420] hover:text-[#E8E8FA]'
                 }
               `}
             >
@@ -108,10 +117,10 @@ export default function Sidebar() {
 
               {/* Status dot */}
               {status === 'completed' && (
-                <span className="w-2 h-2 rounded-full bg-success" />
+                <span className="w-2 h-2 rounded-full bg-[#17C964] shadow-sm shadow-[#17C964]/50" />
               )}
               {status === 'available' && !isActive && (
-                <span className="w-2 h-2 rounded-full bg-gray-200" />
+                <span className="w-2 h-2 rounded-full bg-[#2C2C44]" />
               )}
             </motion.button>
           );
@@ -119,8 +128,8 @@ export default function Sidebar() {
 
         {/* Saved Assessments */}
         {savedAssessments.length > 0 && (
-          <div className="pt-4 mt-4 border-t border-gray-100">
-            <p className="px-4 text-[10px] uppercase font-semibold text-gray-400 tracking-wider mb-2">Saved Assessments</p>
+          <div className="pt-4 mt-4 border-t border-[#1C1C2C]">
+            <p className="px-4 text-[10px] uppercase font-semibold text-[#4F4F80] tracking-wider mb-2">Saved Assessments</p>
             {savedAssessments.slice(0, 5).map((a) => (
               <button
                 key={a.id}
@@ -128,8 +137,8 @@ export default function Sidebar() {
                 className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-xs transition-colors
                   ${
                     currentAssessment?.id === a.id
-                      ? 'bg-primary-50 text-primary-600'
-                      : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                      ? 'bg-[#5AA8E8]/10 text-[#5AA8E8]'
+                      : 'text-[#6666A0] hover:bg-[#141420] hover:text-[#AAAACE]'
                   }
                 `}
               >
@@ -142,18 +151,8 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-4 border-t border-gray-50 space-y-2">
-        {user?.email && (
-          <p className="text-[11px] text-gray-500 text-center truncate px-2">{user.email}</p>
-        )}
-        <button
-          onClick={logout}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
-        >
-          <HiOutlineArrowRightOnRectangle size={16} />
-          Sign Out
-        </button>
-        <p className="text-[10px] text-gray-400 text-center">
+      <div className="px-4 py-4 border-t border-[#1C1C2C]">
+        <p className="text-[10px] text-[#4F4F80] text-center">
           PrivacyCheck v1.0 — Privacy Risk Assessment Toolkit
         </p>
       </div>

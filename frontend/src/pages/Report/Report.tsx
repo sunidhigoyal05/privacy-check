@@ -93,7 +93,7 @@ export default function Report() {
           id="report-content"
         >
           {/* Report Header */}
-          <Card className="border border-gray-100 shadow-none bg-gradient-to-br from-wb-lightblue/50 to-white">
+          <Card className="border border-[#1E1E2E] shadow-none bg-gradient-to-br from-[#0D1E35] to-[#0E0E1A]">
             <CardBody className="p-8">
               <div className="flex items-start justify-between">
                 <div>

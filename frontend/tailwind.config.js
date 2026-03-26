@@ -26,6 +26,7 @@ module.exports = {
   },
   darkMode: "class",
   plugins: [nextui({
+    defaultTheme: "dark",
     themes: {
       light: {
         colors: {
@@ -61,6 +62,63 @@ module.exports = {
             DEFAULT: "#F31260",
             foreground: "#FFFFFF",
           },
+        },
+      },
+      dark: {
+        colors: {
+          background: "#08080E",
+          foreground: "#E8E8FA",
+          primary: {
+            50: "#071828",
+            100: "#0D2840",
+            200: "#163D60",
+            300: "#1E5484",
+            400: "#2B70AD",
+            500: "#5AA8E8",
+            600: "#7AC0F0",
+            700: "#9AD4F8",
+            800: "#BDE6FC",
+            900: "#E0F4FE",
+            DEFAULT: "#5AA8E8",
+            foreground: "#FFFFFF",
+          },
+          secondary: {
+            DEFAULT: "#2DD4BF",
+            foreground: "#08080E",
+          },
+          success: {
+            DEFAULT: "#17C964",
+            foreground: "#FFFFFF",
+          },
+          warning: {
+            DEFAULT: "#F5A524",
+            foreground: "#FFFFFF",
+          },
+          danger: {
+            DEFAULT: "#F31260",
+            foreground: "#FFFFFF",
+          },
+          default: {
+            50: "#0E0E1A",
+            100: "#13131F",
+            200: "#191926",
+            300: "#1E1E2E",
+            400: "#26263A",
+            500: "#363650",
+            600: "#6060A0",
+            700: "#9090C0",
+            800: "#B8B8D8",
+            900: "#DCDCF0",
+            DEFAULT: "#1E1E2E",
+            foreground: "#E8E8FA",
+          },
+          content1: "#0E0E1A",
+          content2: "#141420",
+          content3: "#1A1A28",
+          content4: "#202030",
+          focus: "#5AA8E8",
+          divider: "#1E1E2E",
+          overlay: "#000000",
         },
       },
     },

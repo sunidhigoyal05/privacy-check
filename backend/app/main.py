@@ -1,7 +1,16 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routers import assessments, privacy_lab, bias_lab, governance, reports, auth
+from app.routers import assessments, privacy_lab, bias_lab, governance, reports
+from app.models import init_db
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize database tables on startup
+    await init_db()
+    yield
 
 
 def create_app() -> FastAPI:
@@ -9,6 +18,7 @@ def create_app() -> FastAPI:
         title=settings.app_name,
         version=settings.app_version,
         description="World Bank Privacy Risk Assessment Toolkit",
+        lifespan=lifespan,
     )
 
     app.add_middleware(
@@ -19,7 +29,6 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
     app.include_router(assessments.router, prefix="/api/assessments", tags=["assessments"])
     app.include_router(privacy_lab.router, prefix="/api/privacy-lab", tags=["privacy-lab"])
     app.include_router(bias_lab.router, prefix="/api/bias-lab", tags=["bias-lab"])
