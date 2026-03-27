@@ -11,8 +11,10 @@ import StepAIInvolvement from './steps/StepAIInvolvement';
 import StepRegulations from './steps/StepRegulations';
 import StepSafeguards from './steps/StepSafeguards';
 import StepReview from './steps/StepReview';
+import StepEntryChoice from './steps/StepEntryChoice';
 
 const STEPS: { id: WizardStep; label: string }[] = [
+  { id: 'entry-choice', label: 'Start' },
   { id: 'project-details', label: 'Project Details' },
   { id: 'data-types', label: 'Data Types' },
   { id: 'data-subjects', label: 'Data Subjects' },
@@ -62,16 +64,21 @@ export default function IntakeWizard() {
   };
 
   const canContinue = (): boolean => {
+    // Only project name is required — everything else can be skipped
     switch (wizardStep) {
+      case 'entry-choice': return false; // Entry choice handles its own navigation
       case 'project-details': return !!draft.project_name?.trim();
-      case 'data-types': return (draft.data_types?.length ?? 0) > 0;
-      case 'data-subjects': return (draft.data_subjects?.length ?? 0) > 0;
       default: return true;
     }
   };
 
+  const handleSkipToManual = () => {
+    setWizardStep('project-details');
+  };
+
   const renderStep = () => {
     switch (wizardStep) {
+      case 'entry-choice': return <StepEntryChoice onContinueManual={handleSkipToManual} />;
       case 'project-details': return <StepProjectDetails />;
       case 'data-types': return <StepDataTypes />;
       case 'data-subjects': return <StepDataSubjects />;
@@ -134,37 +141,39 @@ export default function IntakeWizard() {
         </div>
       )}
 
-      {/* Navigation Buttons */}
-      <div className="flex justify-between">
-        <Button
-          variant="flat"
-          onPress={goBack}
-          isDisabled={currentIndex === 0}
-          className="text-gray-600"
-        >
-          Back
-        </Button>
+      {/* Navigation Buttons - hidden on entry-choice step which has its own navigation */}
+      {wizardStep !== 'entry-choice' && (
+        <div className="flex justify-between">
+          <Button
+            variant="flat"
+            onPress={goBack}
+            isDisabled={currentIndex === 0}
+            className="text-gray-600"
+          >
+            Back
+          </Button>
 
-        {wizardStep === 'review' ? (
-          <Button
-            color="primary"
-            onPress={handleSubmit}
-            isLoading={loading['submit']}
-            className="px-8 font-medium"
-          >
-            Submit Assessment
-          </Button>
-        ) : (
-          <Button
-            color="primary"
-            onPress={goNext}
-            isDisabled={!canContinue()}
-            className="px-8 font-medium"
-          >
-            Continue
-          </Button>
-        )}
-      </div>
+          {wizardStep === 'review' ? (
+            <Button
+              color="primary"
+              onPress={handleSubmit}
+              isLoading={loading['submit']}
+              className="px-8 font-medium"
+            >
+              Submit Assessment
+            </Button>
+          ) : (
+            <Button
+              color="primary"
+              onPress={goNext}
+              isDisabled={!canContinue()}
+              className="px-8 font-medium"
+            >
+              Continue
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

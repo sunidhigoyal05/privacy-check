@@ -35,7 +35,7 @@ export default function StepRegulations() {
               key={reg.value}
               value={reg.value}
               classNames={{
-                base: 'inline-flex w-full max-w-full bg-gray-50 hover:bg-primary-50 rounded-xl px-4 py-3 border-2 border-transparent data-[selected=true]:border-primary-400 transition-all m-0',
+                base: 'inline-flex w-full max-w-full bg-[#141420] hover:bg-[#1A1A28] rounded-xl px-4 py-3 border-2 border-transparent data-[selected=true]:border-primary-500 transition-all m-0',
                 label: 'w-full',
               }}
             >

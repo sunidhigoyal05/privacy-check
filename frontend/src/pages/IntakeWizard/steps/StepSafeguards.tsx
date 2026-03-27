@@ -14,6 +14,7 @@ const SAFEGUARDS = [
   { value: 'training', label: 'Staff Privacy Training' },
   { value: 'dpo', label: 'Data Protection Officer / Privacy Lead Assigned' },
   { value: 'vendor-assessment', label: 'Third-Party Vendor Assessments' },
+  { value: 'none-yet', label: 'None Yet / Not Sure' },
 ];
 
 export default function StepSafeguards() {
@@ -37,7 +38,7 @@ export default function StepSafeguards() {
               key={sg.value}
               value={sg.value}
               classNames={{
-                base: 'inline-flex w-full max-w-full bg-gray-50 hover:bg-primary-50 rounded-lg px-4 py-2.5 border-2 border-transparent data-[selected=true]:border-primary-400 transition-all m-0',
+                base: 'inline-flex w-full max-w-full bg-[#141420] hover:bg-[#1A1A28] rounded-lg px-4 py-2.5 border-2 border-transparent data-[selected=true]:border-primary-500 transition-all m-0',
               }}
             >
               <span className="text-sm">{sg.label}</span>

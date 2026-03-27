@@ -12,6 +12,7 @@ const DATA_SUBJECTS = [
   { value: 'government', label: 'Government Officials' },
   { value: 'partners', label: 'Partner Organizations' },
   { value: 'contractors', label: 'Contractors / Vendors' },
+  { value: 'not-sure', label: "Not Sure Yet / Don't Know" },
 ];
 
 const VOLUME_OPTIONS = [
@@ -53,7 +54,7 @@ export default function StepDataSubjects() {
                 key={ds.value}
                 value={ds.value}
                 classNames={{
-                  base: 'inline-flex w-full max-w-full bg-gray-50 hover:bg-primary-50 rounded-lg px-4 py-2.5 border-2 border-transparent data-[selected=true]:border-primary-400 transition-all m-0',
+                  base: 'inline-flex w-full max-w-full bg-[#141420] hover:bg-[#1A1A28] rounded-lg px-4 py-2.5 border-2 border-transparent data-[selected=true]:border-primary-500 transition-all m-0',
                 }}
               >
                 <span className="text-sm">{ds.label}</span>

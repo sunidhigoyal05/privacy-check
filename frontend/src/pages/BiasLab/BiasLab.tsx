@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Button, Card, CardBody, Input, Chip, Spinner, Accordion, AccordionItem, Divider } from '@nextui-org/react';
+import { Button, Card, CardBody, Input, Chip, Spinner, Accordion, AccordionItem, Divider, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@nextui-org/react';
 import { motion } from 'framer-motion';
 import { useAssessmentStore } from '../../store/assessmentStore';
 import { runBiasAnalysis, suggestStakeholders, runPreMortem } from '../../services/api';
-import { HiOutlineUserGroup, HiOutlinePlus, HiOutlineXMark, HiOutlineExclamationTriangle, HiOutlineLightBulb } from 'react-icons/hi2';
+import { HiOutlineUserGroup, HiOutlinePlus, HiOutlineXMark, HiOutlineExclamationTriangle, HiOutlineLightBulb, HiOutlineDocumentText, HiOutlinePrinter } from 'react-icons/hi2';
 import PreMortemLab from './PreMortemLab';
 
 export default function BiasLab() {
@@ -13,6 +13,7 @@ export default function BiasLab() {
   const [indirectGroups, setIndirectGroups] = useState<string[]>([]);
   const [inputValues, setInputValues] = useState({ primary: '', affected: '', indirect: '' });
   const [suggestions, setSuggestions] = useState<any>(null);
+  const [showReport, setShowReport] = useState(false);
 
   if (!currentAssessment) {
     return (
@@ -67,9 +68,21 @@ export default function BiasLab() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-semibold text-gray-900">Bias & Inclusion Lab</h2>
-        <p className="text-gray-500 mt-1">Identify who's affected and assess bias risks.</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-900">Bias & Inclusion Lab</h2>
+          <p className="text-gray-500 mt-1">Identify who's affected and assess bias risks.</p>
+        </div>
+        {biasAnalysis && (
+          <Button
+            variant="flat"
+            color="primary"
+            startContent={<HiOutlineDocumentText size={16} />}
+            onPress={() => setShowReport(true)}
+          >
+            View Diagnostic Report
+          </Button>
+        )}
       </div>
 
       {/* Stakeholder Mapping */}
@@ -264,6 +277,93 @@ export default function BiasLab() {
           <PreMortemLab />
         </motion.div>
       )}
+
+      {/* Diagnostic Report Modal */}
+      <Modal 
+        isOpen={showReport} 
+        onClose={() => setShowReport(false)} 
+        size="4xl" 
+        scrollBehavior="inside"
+        classNames={{
+          base: 'bg-[#0E0E1A] border border-[#1E1E2E]',
+          header: 'border-b border-[#1E1E2E]',
+          body: 'py-6',
+          footer: 'border-t border-[#1E1E2E]',
+        }}
+      >
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <HiOutlineUserGroup className="text-primary-500" size={20} />
+              <span>Bias & Inclusion Lab — Diagnostic Report</span>
+            </div>
+            <p className="text-xs font-normal text-gray-500">{currentAssessment.project_name}</p>
+          </ModalHeader>
+          <ModalBody>
+            {biasAnalysis && (
+              <div className="space-y-6">
+                {/* Summary */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Summary</h4>
+                  <p className="text-sm text-gray-300">{biasAnalysis.summary}</p>
+                </div>
+
+                {/* Bias Risk Scenarios */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Bias Risk Scenarios</h4>
+                  <ul className="space-y-2">
+                    {biasAnalysis.bias_risk_scenarios.map((scenario, i) => (
+                      <li key={i} className="bg-[#141420] rounded-lg p-3">
+                        <p className="text-sm text-gray-300">{scenario.scenario}</p>
+                        <div className="flex gap-2 mt-2">
+                          <Chip size="sm" color={scenario.likelihood === 'high' ? 'danger' : 'warning'} variant="flat">
+                            Likelihood: {scenario.likelihood}
+                          </Chip>
+                          <Chip size="sm" color={scenario.impact === 'high' ? 'danger' : 'warning'} variant="flat">
+                            Impact: {scenario.impact}
+                          </Chip>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Harm Scenarios */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Potential Harms</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {biasAnalysis.harm_scenarios.map((harm, i) => (
+                      <div key={i} className="bg-[#141420] rounded-lg p-3">
+                        <Chip size="sm" color="danger" variant="flat" className="mb-1">{harm.category}</Chip>
+                        <p className="text-xs text-gray-400">{harm.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Fairness Practices */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Recommended Fairness Practices</h4>
+                  <ul className="space-y-1">
+                    {biasAnalysis.fairness_practices.map((p, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                        <span className="text-success">✓</span>
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="flat" onPress={() => setShowReport(false)}>Close</Button>
+            <Button color="primary" startContent={<HiOutlinePrinter size={16} />} onPress={() => window.print()}>
+              Print Report
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

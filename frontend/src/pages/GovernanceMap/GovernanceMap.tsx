@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Button, Card, CardBody, Chip, Spinner, Input, Checkbox, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip } from '@nextui-org/react';
+import { Button, Card, CardBody, Chip, Spinner, Input, Checkbox, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@nextui-org/react';
 import { motion } from 'framer-motion';
 import { useAssessmentStore } from '../../store/assessmentStore';
 import { generateGovernance } from '../../services/api';
-import { HiOutlineScale, HiOutlinePlus, HiOutlineArrowPath } from 'react-icons/hi2';
+import { HiOutlineScale, HiOutlinePlus, HiOutlineArrowPath, HiOutlineDocumentText, HiOutlinePrinter } from 'react-icons/hi2';
 
 const RACI_COLORS: Record<string, string> = {
   R: 'bg-primary-100/20 text-primary-400',
@@ -25,6 +25,7 @@ export default function GovernanceMap() {
   const [newRole, setNewRole] = useState('');
   const [responsibilities, setResponsibilities] = useState<string[]>([]);
   const [newResponsibility, setNewResponsibility] = useState('');
+  const [showReport, setShowReport] = useState(false);
 
   if (!currentAssessment) {
     return (
@@ -67,9 +68,21 @@ export default function GovernanceMap() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-semibold text-gray-900">Governance & Accountability Map</h2>
-        <p className="text-gray-500 mt-1">Define who is responsible for what in your project.</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-900">Governance & Accountability Map</h2>
+          <p className="text-gray-500 mt-1">Define who is responsible for what in your project.</p>
+        </div>
+        {governance && (
+          <Button
+            variant="flat"
+            color="primary"
+            startContent={<HiOutlineDocumentText size={16} />}
+            onPress={() => setShowReport(true)}
+          >
+            View Diagnostic Report
+          </Button>
+        )}
       </div>
 
       {!governance && (
@@ -252,6 +265,77 @@ export default function GovernanceMap() {
           </Button>
         </motion.div>
       )}
+
+      {/* Diagnostic Report Modal */}
+      <Modal 
+        isOpen={showReport} 
+        onClose={() => setShowReport(false)} 
+        size="4xl" 
+        scrollBehavior="inside"
+        classNames={{
+          base: 'bg-[#0E0E1A] border border-[#1E1E2E]',
+          header: 'border-b border-[#1E1E2E]',
+          body: 'py-6',
+          footer: 'border-t border-[#1E1E2E]',
+        }}
+      >
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <HiOutlineScale className="text-primary-500" size={20} />
+              <span>Governance & Accountability — Diagnostic Report</span>
+            </div>
+            <p className="text-xs font-normal text-gray-500">{currentAssessment.project_name}</p>
+          </ModalHeader>
+          <ModalBody>
+            {governance && (
+              <div className="space-y-6">
+                {/* Summary */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Summary</h4>
+                  <p className="text-sm text-gray-300">{governance.summary}</p>
+                </div>
+
+                {/* Decision Rights */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Key Decision Rights</h4>
+                  <div className="space-y-2">
+                    {governance.decision_rights.map((dr, i) => (
+                      <div key={i} className="bg-[#141420] rounded-lg p-3">
+                        <p className="text-sm font-medium text-gray-200">{dr.decision}</p>
+                        <div className="flex gap-4 mt-1 text-xs">
+                          <span className="text-gray-500">Owner: <span className="text-primary-400">{dr.owner}</span></span>
+                          <span className="text-gray-500">Escalation: <span className="text-warning-400">{dr.escalation}</span></span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Accountability Checklist */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Accountability Checklist</h4>
+                  <ul className="space-y-2">
+                    {governance.accountability_checklist.map((item, i) => (
+                      <li key={i} className="flex items-center gap-3 bg-[#141420] rounded-lg p-3">
+                        <span className={item.done ? 'text-success' : 'text-gray-600'}>{item.done ? '✓' : '○'}</span>
+                        <span className="flex-1 text-sm text-gray-300">{item.item}</span>
+                        <Chip size="sm" variant="flat" color="primary">{item.owner}</Chip>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="flat" onPress={() => setShowReport(false)}>Close</Button>
+            <Button color="primary" startContent={<HiOutlinePrinter size={16} />} onPress={() => window.print()}>
+              Print Report
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { NavSection } from '../../types';
 import { useAssessmentStore } from '../../store/assessmentStore';
-import { listAssessments } from '../../services/api';
+import { listAssessments, deleteAssessment } from '../../services/api';
 import { motion } from 'framer-motion';
+import { Tooltip } from '@nextui-org/react';
 import {
   HiOutlineClipboardDocumentCheck,
   HiOutlineShieldCheck,
@@ -12,6 +13,7 @@ import {
   HiOutlineDocumentArrowDown,
   HiOutlineFolderOpen,
   HiOutlinePlusCircle,
+  HiOutlineTrash,
 } from 'react-icons/hi2';
 
 interface NavItem {
@@ -32,12 +34,26 @@ const navItems: NavItem[] = [
 export default function Sidebar() {
   const { activeSection, setActiveSection, currentAssessment, savedAssessments, setSavedAssessments, setCurrentAssessment, newAssessment } = useAssessmentStore();
 
-  // Load saved assessments on mount
-  useEffect(() => {
+  const refreshList = () => {
     listAssessments()
       .then(setSavedAssessments)
-      .catch(() => {}); // silently fail — toast handles it
-  }, [setSavedAssessments]);
+      .catch(() => {});
+  };
+
+  // Load on mount
+  useEffect(() => {
+    refreshList();
+  }, []);
+
+  // Refresh list whenever an assessment is saved/updated
+  useEffect(() => {
+    if (currentAssessment?.id) refreshList();
+  }, [currentAssessment?.id]);
+
+  const handleNewAssessment = () => {
+    newAssessment();
+    refreshList();
+  };
 
   const handleLoadAssessment = (assessment: typeof savedAssessments[number]) => {
     setCurrentAssessment(assessment);
@@ -48,10 +64,24 @@ export default function Sidebar() {
     else setActiveSection('privacy-lab');
   };
 
+  const handleDeleteAssessment = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (!confirm('Delete this assessment?')) return;
+    await deleteAssessment(id);
+    setSavedAssessments(savedAssessments.filter(a => a.id !== id));
+    if (currentAssessment?.id === id) {
+      newAssessment();
+    }
+  };
+
   const getCompletionStatus = (id: NavSection): 'completed' | 'available' | 'locked' => {
+    // Intake is always available
     if (id === 'intake') return currentAssessment ? 'completed' : 'available';
+    
+    // All other sections are available once an assessment exists (no locking)
     if (!currentAssessment) return 'locked';
 
+    // Show completion status but don't lock
     const a = currentAssessment;
     switch (id) {
       case 'privacy-lab': return a.privacy_analysis ? 'completed' : 'available';
@@ -83,7 +113,7 @@ export default function Sidebar() {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
-          onClick={newAssessment}
+          onClick={handleNewAssessment}
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#5AA8E8]/20 to-[#2DD4BF]/20 border border-[#5AA8E8]/30 text-[#5AA8E8] text-sm font-medium hover:from-[#5AA8E8]/30 hover:to-[#2DD4BF]/30 transition-all duration-200"
         >
           <HiOutlinePlusCircle size={17} />
@@ -131,10 +161,10 @@ export default function Sidebar() {
           <div className="pt-4 mt-4 border-t border-[#1C1C2C]">
             <p className="px-4 text-[10px] uppercase font-semibold text-[#4F4F80] tracking-wider mb-2">Saved Assessments</p>
             {savedAssessments.slice(0, 5).map((a) => (
-              <button
+              <div
                 key={a.id}
                 onClick={() => handleLoadAssessment(a)}
-                className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-xs transition-colors
+                className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-xs transition-colors cursor-pointer group
                   ${
                     currentAssessment?.id === a.id
                       ? 'bg-[#5AA8E8]/10 text-[#5AA8E8]'
@@ -144,7 +174,15 @@ export default function Sidebar() {
               >
                 <HiOutlineFolderOpen size={14} />
                 <span className="truncate flex-1 text-left">{a.project_name}</span>
-              </button>
+                <Tooltip content="Delete" placement="right" delay={500}>
+                  <button
+                    onClick={(e) => handleDeleteAssessment(e, a.id!)}
+                    className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-danger/20 hover:text-danger transition-all"
+                  >
+                    <HiOutlineTrash size={12} />
+                  </button>
+                </Tooltip>
+              </div>
             ))}
           </div>
         )}

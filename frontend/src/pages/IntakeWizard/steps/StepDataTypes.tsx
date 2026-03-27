@@ -1,5 +1,6 @@
-import { Checkbox, CheckboxGroup, Textarea } from '@nextui-org/react';
+import { Checkbox, CheckboxGroup } from '@nextui-org/react';
 import { useAssessmentStore } from '../../../store/assessmentStore';
+import SpeechTextarea from '../../../components/common/SpeechTextarea';
 
 const DATA_TYPES = [
   { value: 'pii', label: 'Personally Identifiable Information (PII)', desc: 'Names, addresses, phone numbers, ID numbers' },
@@ -12,6 +13,7 @@ const DATA_TYPES = [
   { value: 'education', label: 'Education Data', desc: 'School records, literacy, qualifications' },
   { value: 'employment', label: 'Employment Data', desc: 'Job history, salary, employer details' },
   { value: 'communications', label: 'Communications Data', desc: 'Emails, messages, call records' },
+  { value: 'not-sure', label: "Not Sure Yet / Don't Know", desc: 'Skip for now — you can update this later' },
 ];
 
 export default function StepDataTypes() {
@@ -35,7 +37,7 @@ export default function StepDataTypes() {
               key={dt.value}
               value={dt.value}
               classNames={{
-                base: 'inline-flex w-full max-w-full bg-gray-50 hover:bg-primary-50 rounded-xl px-4 py-3 border-2 border-transparent data-[selected=true]:border-primary-400 transition-all m-0',
+                base: 'inline-flex w-full max-w-full bg-[#141420] hover:bg-[#1A1A28] rounded-xl px-4 py-3 border-2 border-transparent data-[selected=true]:border-primary-500 transition-all m-0',
                 label: 'w-full',
               }}
             >
@@ -48,7 +50,7 @@ export default function StepDataTypes() {
         </div>
       </CheckboxGroup>
 
-      <Textarea
+      <SpeechTextarea
         label="Other Data Types"
         placeholder="Describe any additional data types not listed above..."
         value={draft.data_types_custom || ''}

@@ -62,3 +62,14 @@ async def update_assessment(assessment_id: str, data: AssessmentUpdate, db: Asyn
 async def list_assessments(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Assessment).order_by(Assessment.updated_at.desc()))
     return result.scalars().all()
+
+
+@router.delete("/{assessment_id}", status_code=204)
+async def delete_assessment(assessment_id: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Assessment).where(Assessment.id == assessment_id))
+    assessment = result.scalar_one_or_none()
+    if not assessment:
+        raise HTTPException(status_code=404, detail="Assessment not found")
+    await db.delete(assessment)
+    await db.commit()
+    return None

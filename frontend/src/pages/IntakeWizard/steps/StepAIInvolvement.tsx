@@ -1,6 +1,7 @@
-import { Switch, Input, Textarea, Select, SelectItem } from '@nextui-org/react';
+import { Switch, Select, SelectItem } from '@nextui-org/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAssessmentStore } from '../../../store/assessmentStore';
+import SpeechTextarea from '../../../components/common/SpeechTextarea';
 
 export default function StepAIInvolvement() {
   const { draft, updateDraft } = useAssessmentStore();
@@ -58,7 +59,7 @@ export default function StepAIInvolvement() {
                 <SelectItem key="other">Other</SelectItem>
               </Select>
 
-              <Textarea
+              <SpeechTextarea
                 label="Training Data Description"
                 placeholder="Describe what data is used to train the model..."
                 value={aiDetails.training_data_description || ''}
@@ -81,7 +82,7 @@ export default function StepAIInvolvement() {
               </div>
 
               {aiDetails.automated_decisions && (
-                <Textarea
+                <SpeechTextarea
                   label="What decisions are automated?"
                   placeholder="Describe the automated decisions and their impact..."
                   value={aiDetails.decision_description || ''}

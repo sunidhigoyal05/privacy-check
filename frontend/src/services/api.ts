@@ -39,6 +39,9 @@ export const updateAssessment = (id: string, data: Partial<AssessmentCreate>) =>
 export const listAssessments = () =>
   api.get<Assessment[]>('/assessments/').then(r => r.data);
 
+export const deleteAssessment = (id: string) =>
+  api.delete(`/assessments/${id}`);
+
 // Privacy Lab
 export const runPrivacyAnalysis = (assessment_id: string) =>
   api.post<PrivacyAnalysis>('/privacy-lab/analyze', { assessment_id }).then(r => r.data);

@@ -1,5 +1,7 @@
-import { Input, Textarea } from '@nextui-org/react';
+import { Input } from '@nextui-org/react';
 import { useAssessmentStore } from '../../../store/assessmentStore';
+import SpeechTextarea from '../../../components/common/SpeechTextarea';
+import SpeechInput from '../../../components/common/SpeechInput';
 
 export default function StepProjectDetails() {
   const { draft, updateDraft } = useAssessmentStore();
@@ -12,7 +14,7 @@ export default function StepProjectDetails() {
       </div>
 
       <div className="space-y-5">
-        <Input
+        <SpeechInput
           label="Project Name"
           placeholder="e.g., Beneficiary Identification System"
           value={draft.project_name || ''}
@@ -22,7 +24,7 @@ export default function StepProjectDetails() {
           classNames={{ inputWrapper: 'border-gray-200' }}
         />
 
-        <Textarea
+        <SpeechTextarea
           label="Project Description"
           placeholder="Describe the project's objectives, scope, and what data it will handle..."
           value={draft.project_description || ''}

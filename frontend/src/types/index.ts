@@ -186,6 +186,7 @@ export interface FullReport {
 
 // Wizard step tracking
 export type WizardStep =
+  | 'entry-choice'
   | 'project-details'
   | 'data-types'
   | 'data-subjects'

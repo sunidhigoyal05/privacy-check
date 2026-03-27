@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { Button, Card, CardBody, Chip, Spinner, Accordion, AccordionItem, Tabs, Tab } from '@nextui-org/react';
+import { Button, Card, CardBody, Chip, Spinner, Accordion, AccordionItem, Tabs, Tab, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@nextui-org/react';
 import { motion } from 'framer-motion';
 import { useAssessmentStore } from '../../store/assessmentStore';
 import { runPrivacyAnalysis, getPETRecommendations } from '../../services/api';
 import RiskHeatmap from '../../components/charts/RiskHeatmap';
 import RiskGauge from '../../components/charts/RiskGauge';
 import type { PETRecommendation } from '../../types';
-import { HiOutlineShieldCheck, HiOutlineCpuChip, HiOutlineExclamationTriangle, HiOutlineChevronDown } from 'react-icons/hi2';
+import { HiOutlineShieldCheck, HiOutlineCpuChip, HiOutlineExclamationTriangle, HiOutlineChevronDown, HiOutlineDocumentText, HiOutlinePrinter } from 'react-icons/hi2';
 
 export default function PrivacyLab() {
   const { currentAssessment, setCurrentAssessment, loading, setLoading } = useAssessmentStore();
   const [showDetailedGuidance, setShowDetailedGuidance] = useState<Record<string, boolean>>({});
+  const [showReport, setShowReport] = useState(false);
 
   if (!currentAssessment) {
     return (
@@ -54,9 +55,21 @@ export default function PrivacyLab() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-semibold text-gray-900">Privacy Engineering Lab</h2>
-        <p className="text-gray-500 mt-1">Analyze privacy risks and get technology recommendations.</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-900">Privacy Engineering Lab</h2>
+          <p className="text-gray-500 mt-1">Analyze privacy risks and get technology recommendations.</p>
+        </div>
+        {analysis && (
+          <Button
+            variant="flat"
+            color="primary"
+            startContent={<HiOutlineDocumentText size={16} />}
+            onPress={() => setShowReport(true)}
+          >
+            View Diagnostic Report
+          </Button>
+        )}
       </div>
 
       {/* Action buttons */}
@@ -249,6 +262,106 @@ export default function PrivacyLab() {
           )}
         </motion.div>
       )}
+
+      {/* Diagnostic Report Modal */}
+      <Modal 
+        isOpen={showReport} 
+        onClose={() => setShowReport(false)} 
+        size="4xl" 
+        scrollBehavior="inside"
+        classNames={{
+          base: 'bg-[#0E0E1A] border border-[#1E1E2E]',
+          header: 'border-b border-[#1E1E2E]',
+          body: 'py-6',
+          footer: 'border-t border-[#1E1E2E]',
+        }}
+      >
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <HiOutlineShieldCheck className="text-primary-500" size={20} />
+              <span>Privacy Engineering Lab — Diagnostic Report</span>
+            </div>
+            <p className="text-xs font-normal text-gray-500">{currentAssessment.project_name}</p>
+          </ModalHeader>
+          <ModalBody className="print:bg-white print:text-black" id="privacy-report">
+            {analysis && (
+              <div className="space-y-6">
+                {/* Summary */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Summary</h4>
+                  <p className="text-sm text-gray-300">{analysis.summary}</p>
+                </div>
+
+                {/* Risk Scores */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Risk Scores by Lifecycle Stage</h4>
+                  <div className="grid grid-cols-5 gap-3">
+                    {Object.entries(analysis.risk_scores).map(([stage, score]) => (
+                      <div key={stage} className="bg-[#141420] rounded-lg p-3 text-center">
+                        <div className="text-2xl font-bold text-primary-400">{Math.round((score as number) * 100)}%</div>
+                        <div className="text-xs text-gray-500 capitalize mt-1">{stage}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Technical Debt */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Technical Debt</h4>
+                  <ul className="space-y-2">
+                    {analysis.technical_debt.map((item, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm">
+                        <Chip size="sm" color={item.severity === 'high' ? 'danger' : item.severity === 'medium' ? 'warning' : 'default'} variant="flat" className="text-[10px] shrink-0">
+                          {item.severity}
+                        </Chip>
+                        <span className="text-gray-300">{item.issue}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Regulatory Gaps */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Regulatory Gaps</h4>
+                  <ul className="space-y-1">
+                    {analysis.regulatory_gaps.map((gap, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                        <span className="text-danger-400">•</span>
+                        {gap}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* PET Recommendations Summary */}
+                {pets && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Recommended Privacy Technologies</h4>
+                    <div className="space-y-2">
+                      {pets.recommendations.slice(0, 5).map((pet: PETRecommendation, i: number) => (
+                        <div key={i} className="bg-[#141420] rounded-lg p-3">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-gray-200">{pet.name}</span>
+                            <Chip size="sm" color="primary" variant="flat">{Math.round(pet.suitability_score * 100)}% match</Chip>
+                          </div>
+                          <p className="text-xs text-gray-400 mt-1">{pet.rationale}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="flat" onPress={() => setShowReport(false)}>Close</Button>
+            <Button color="primary" startContent={<HiOutlinePrinter size={16} />} onPress={() => window.print()}>
+              Print Report
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

@@ -56,9 +56,9 @@ export const useAssessmentStore = create<AssessmentStore>()(
 
       draft: { ...initialDraft },
       updateDraft: (data) => set((state) => ({ draft: { ...state.draft, ...data } })),
-      resetDraft: () => set({ draft: { ...initialDraft }, wizardStep: 'project-details' }),
+      resetDraft: () => set({ draft: { ...initialDraft }, wizardStep: 'entry-choice' }),
 
-      wizardStep: 'project-details',
+      wizardStep: 'entry-choice',
       setWizardStep: (step) => set({ wizardStep: step }),
 
       activeSection: 'intake',
@@ -73,7 +73,7 @@ export const useAssessmentStore = create<AssessmentStore>()(
       newAssessment: () => set({
         currentAssessment: null,
         draft: { ...initialDraft },
-        wizardStep: 'project-details',
+        wizardStep: 'entry-choice',
         activeSection: 'intake',
         loading: {},
       }),
